@@ -1,0 +1,16 @@
+name: Deploy 1 tier app
+run-name: Deploy Feed Back by ${{ github.actor }} and Event is ${{ github.event_name }}
+
+on: 
+  push:
+    branches:
+      - master
+jobs:
+ CI-1tier-app:
+  runs-on: ubuntu-latest
+  steps:
+  - name: clone repo
+    uses: actions/checkout@v4
+  - name: docker login 
+    uses: docker/login-action@v3
+    
