@@ -1,4 +1,4 @@
-name: Deploy 1 tier app ITI
+name: Deploy 1 tier app ITI test 
 run-name: Deploy Feed Back by ${{ github.actor }} and Event is ${{ github.event_name }}
 
 on: 
