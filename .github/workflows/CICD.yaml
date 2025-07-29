@@ -45,3 +45,32 @@ jobs:
         context: ./project
         push: true
         tags: mohamedezzat1/iti-actions:${{ github.run_number }}
+  CD:
+    runs-on: ubuntu-latest
+    needs:
+      - CI-1tier-app
+    steps:
+      - name: clone repo
+        uses: actions/checkout@v4
+
+      - name: Save SSH Private Key
+        run: |
+         echo "${{ secrets.SSH_PRIVATE_KEY }}" > key.pem
+         chmod 600 key.pem    
+      - name: Install Minikube on EC2 and Deploy App
+        run: |
+          scp -o StrictHostKeyChecking=no -i key.pem k8s/app.yaml ubuntu@ec2-3-91-134-128.compute-1.amazonaws.com:/home/ubuntu/
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@ec2-3-91-134-128.compute-1.amazonaws.com << 'EOF'
+          sudo apt update && sudo apt install -y curl apt-transport-https ca-certificates conntrack
+
+          curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+          sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+          curl -LO "https://dl.k8s.io/release/$(curl -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+
+          sudo minikube start --driver=none
+          sudo minikube addons enable ingress
+
+          sudo kubectl apply -f /home/ubuntu/app.yaml
+          kubectl port-forward service/service-web 8080:6000
