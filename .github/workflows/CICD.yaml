@@ -103,11 +103,10 @@ jobs:
             cd ~
             rm -rf cri-dockerd
 
-            # Install crictl
-            CRICTL_VERSION="v1.29.0"
-            wget https://github.com/kubernetes-sigs/cri-tools/releases/download/v${CRICTL_VERSION}/crictl-${CRICTL_VERSION}-linux-amd64.tar.gz
-            sudo tar zxvf crictl-${CRICTL_VERSION}-linux-amd64.tar.gz -C /usr/local/bin
-            rm crictl-${CRICTL_VERSION}-linux-amd64.tar.gz
+            CRICTL_VERSION=1.29.0
+            wget https://github.com/kubernetes-sigs/cri-tools/releases/download/v${CRICTL_VERSION}/crictl-v${CRICTL_VERSION}-linux-amd64.tar.gz
+            sudo tar zxvf crictl-v${CRICTL_VERSION}-linux-amd64.tar.gz -C /usr/local/bin
+            rm crictl-v${CRICTL_VERSION}-linux-amd64.tar.gz
 
             # Install Minikube
             curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
