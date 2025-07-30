@@ -64,7 +64,7 @@ jobs:
       - name: update and install
         run: |
           sudo apt update -y
-          sudo apt install -y curl wget apt-transport-https conntrack 
+          sudo apt install -y curl wget apt-transport-https conntrack cri-dockerd
           CRICTL_VERSION="v1.29.0"
           wget https://github.com/kubernetes-sigs/cri-tools/releases/download/${CRICTL_VERSION}/crictl-${CRICTL_VERSION}-linux-amd64.tar.gz
           sudo tar zxvf crictl-${CRICTL_VERSION}-linux-amd64.tar.gz -C /usr/local/bin
