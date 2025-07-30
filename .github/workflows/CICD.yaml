@@ -77,6 +77,11 @@ jobs:
             sudo tar -C /opt/cni/bin -xzvf cni-plugins-linux-amd64-${CNI_VERSION}.tgz
             rm cni-plugins-linux-amd64-${CNI_VERSION}.tgz
 
+            sudo apt update
+            sudo apt install -y docker.io
+            sudo systemctl enable docker
+            sudo systemctl start docker
+
             # Install cri-dockerd binary
             CRIDOCKERD_VERSION="0.3.1"
             wget https://github.com/Mirantis/cri-dockerd/releases/download/v${CRIDOCKERD_VERSION}/cri-dockerd-${CRIDOCKERD_VERSION}.amd64.tgz
