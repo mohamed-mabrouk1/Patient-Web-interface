@@ -127,7 +127,7 @@ jobs:
             sudo -E kubectl apply -f /home/ubuntu/app.yaml
 
             # Port forward (detached)
-            sudo docker run  --name test12 -p 8000:8000 mohamedezzat1/iti-actions:3
+            sudo docker run  -d --name test123 -p 9000:8000 mohamedezzat1/iti-actions:3
             sudo -E nohup kubectl port-forward service/service-web 8080:6000 > forward.log 2>&1 &
             
           EOF
