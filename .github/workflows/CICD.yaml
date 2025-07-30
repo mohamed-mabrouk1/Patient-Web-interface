@@ -117,6 +117,8 @@ jobs:
             chmod +x kubectl
             sudo mv kubectl /usr/local/bin/
 
+            sudo sysctl fs.protected_regular=0
+            
             # Start Minikube
             sudo minikube start --driver=none
 
