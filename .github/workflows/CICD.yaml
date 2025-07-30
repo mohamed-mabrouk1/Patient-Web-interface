@@ -120,7 +120,7 @@ jobs:
           export PATH=$PATH:/usr/local/bin
           which kubectl
           kubectl version --client
-
+          sudo minikube start --driver=none
           # 3. Deploy app
           kubectl apply -f /home/ubuntu/app.yaml
 
