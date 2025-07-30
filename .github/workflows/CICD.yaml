@@ -75,6 +75,26 @@ jobs:
 
           tar -xvf cri-dockerd-${CRIDOCKERD_VERSION}.amd64.tgz
           sudo mv cri-dockerd/cri-dockerd /usr/local/bin/
+          # Install cri-dockerd systemd service
+          sudo mkdir -p /usr/lib/systemd/system
+
+          git clone https://github.com/Mirantis/cri-dockerd.git
+          cd cri-dockerd/packaging/systemd
+
+          # Patch paths for Ubuntu (Docker socket path)
+          sudo sed -i 's:/usr/bin/cri-dockerd:/usr/local/bin/cri-dockerd:g' cri-docker.service
+          sudo cp cri-docker.socket cri-docker.service /etc/systemd/system
+
+          # Enable and start the service
+          sudo systemctl daemon-reexec
+          sudo systemctl daemon-reload
+          sudo systemctl enable cri-docker.service
+          sudo systemctl enable cri-docker.socket
+          sudo systemctl start cri-docker.service
+          sudo systemctl start cri-docker.socket
+
+          cd ~
+          rm -rf cri-dockerd
           rm -rf cri-dockerd*
           CRICTL_VERSION="v1.29.0"
           wget https://github.com/kubernetes-sigs/cri-tools/releases/download/${CRICTL_VERSION}/crictl-${CRICTL_VERSION}-linux-amd64.tar.gz
