@@ -23,7 +23,7 @@ kind: Service
 metadata:
   name: service-web
 spec:
-  type: LoadBalancer
+  type: NodePort
   selector:
     app: ITI
   ports:
