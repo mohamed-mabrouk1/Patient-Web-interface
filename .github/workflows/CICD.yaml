@@ -47,8 +47,8 @@ jobs:
         tags: mohamedezzat1/iti-actions:${{ github.run_number }}
  CD:
     runs-on: ubuntu-latest
-    #needs:
-     # - CI-1tier-app
+    needs:
+      - CI-1tier-app
     steps:
       - name: clone repo
         uses: actions/checkout@v4
