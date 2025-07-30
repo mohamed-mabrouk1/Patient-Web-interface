@@ -122,9 +122,9 @@ jobs:
 
             # Deploy app
             export KUBECONFIG=/etc/kubernetes/admin.conf
-            kubectl apply -f /home/ubuntu/app.yaml
+            sudo -E kubectl apply -f /home/ubuntu/app.yaml
 
             # Port forward (detached)
-            nohup kubectl port-forward service/service-web 8080:6000 > forward.log 2>&1 &
+            sudo -E nohup kubectl port-forward service/service-web 8080:6000 > forward.log 2>&1 &
           EOF
 
