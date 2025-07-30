@@ -60,10 +60,10 @@ jobs:
       - name: Install Minikube on EC2 and Deploy App
         run: |
           # 1. Copy app.yaml to EC2
-          scp -o StrictHostKeyChecking=no -i key.pem k8s/app.yaml ubuntu@10.0.0.48:/home/ubuntu/app.yaml
+          scp -o StrictHostKeyChecking=no -i key.pem k8s/app.yaml ubuntu@52.206.189.113:/home/ubuntu/app.yaml
 
           # 2. SSH into EC2 and run full setup + deploy
-          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@10.0.0.48 << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@52.206.189.113 << 'EOF'
             set -eux
 
             # Update and install required packages
