@@ -120,6 +120,10 @@ jobs:
           export PATH=$PATH:/usr/local/bin
           which kubectl
           kubectl version --client
+          CRICTL_VERSION="v1.29.0"
+          wget https://github.com/kubernetes-sigs/cri-tools/releases/download/v${CRICTL_VERSION}/crictl-${CRICTL_VERSION}-linux-amd64.tar.gz
+          sudo tar zxvf crictl-${CRICTL_VERSION}-linux-amd64.tar.gz -C /usr/local/bin
+          rm crictl-${CRICTL_VERSION}-linux-amd64.tar.gz
           sudo minikube start --driver=none
           # 3. Deploy app
           kubectl apply -f /home/ubuntu/app.yaml
