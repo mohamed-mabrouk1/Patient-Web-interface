@@ -59,56 +59,68 @@ jobs:
          chmod 600 key.pem    
       - name: Install Minikube on EC2 and Deploy App
         run: |
+          # 1. Copy app.yaml to EC2
           scp -o StrictHostKeyChecking=no -i key.pem k8s/app.yaml ubuntu@ec2-3-91-134-128.compute-1.amazonaws.com:/home/ubuntu/app.yaml
+
+          # 2. SSH into EC2 and run full setup + deploy
           ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@ec2-3-91-134-128.compute-1.amazonaws.com << 'EOF'
-      - name: update and install
-        run: |
-          sudo apt update -y
-          sudo apt install -y curl wget apt-transport-https conntrack
-          CNI_VERSION="v1.3.0"
-          wget https://github.com/containernetworking/plugins/releases/download/${CNI_VERSION}/cni-plugins-linux-amd64-${CNI_VERSION}.tgz
-          sudo mkdir -p /opt/cni/bin
-          sudo tar -C /opt/cni/bin -xzvf cni-plugins-linux-amd64-${CNI_VERSION}.tgz
-          rm cni-plugins-linux-amd64-${CNI_VERSION}.tgz 
-          CRIDOCKERD_VERSION="0.3.1"
-          wget https://github.com/Mirantis/cri-dockerd/releases/download/v${CRIDOCKERD_VERSION}/cri-dockerd-${CRIDOCKERD_VERSION}.amd64.tgz
+            set -eux
 
-          tar -xvf cri-dockerd-${CRIDOCKERD_VERSION}.amd64.tgz
-          sudo mv cri-dockerd/cri-dockerd /usr/local/bin/
-          # Install cri-dockerd systemd service
-          sudo mkdir -p /usr/lib/systemd/system
+            # Update and install required packages
+            sudo apt update -y
+            sudo apt install -y curl wget apt-transport-https conntrack git
 
-          git clone https://github.com/Mirantis/cri-dockerd.git
-          cd cri-dockerd/packaging/systemd
+            # Install CNI plugins
+            CNI_VERSION="v1.3.0"
+            wget https://github.com/containernetworking/plugins/releases/download/${CNI_VERSION}/cni-plugins-linux-amd64-${CNI_VERSION}.tgz
+            sudo mkdir -p /opt/cni/bin
+            sudo tar -C /opt/cni/bin -xzvf cni-plugins-linux-amd64-${CNI_VERSION}.tgz
+            rm cni-plugins-linux-amd64-${CNI_VERSION}.tgz
 
-          # Patch paths for Ubuntu (Docker socket path)
-          sudo sed -i 's:/usr/bin/cri-dockerd:/usr/local/bin/cri-dockerd:g' cri-docker.service
-          sudo cp cri-docker.socket cri-docker.service /etc/systemd/system
+            # Install cri-dockerd binary
+            CRIDOCKERD_VERSION="0.3.1"
+            wget https://github.com/Mirantis/cri-dockerd/releases/download/v${CRIDOCKERD_VERSION}/cri-dockerd-${CRIDOCKERD_VERSION}.amd64.tgz
+            tar -xvf cri-dockerd-${CRIDOCKERD_VERSION}.amd64.tgz
+            sudo mv cri-dockerd/cri-dockerd /usr/local/bin/
+            rm -rf cri-dockerd*
 
-          # Enable and start the service
-          sudo systemctl daemon-reexec
-          sudo systemctl daemon-reload
-          sudo systemctl enable cri-docker.service
-          sudo systemctl enable cri-docker.socket
-          sudo systemctl start cri-docker.service
-          sudo systemctl start cri-docker.socket
+            # Install cri-dockerd systemd service
+            git clone https://github.com/Mirantis/cri-dockerd.git
+            cd cri-dockerd/packaging/systemd
+            sudo sed -i 's:/usr/bin/cri-dockerd:/usr/local/bin/cri-dockerd:g' cri-docker.service
+            sudo cp cri-docker.socket cri-docker.service /etc/systemd/system
+            sudo systemctl daemon-reexec
+            sudo systemctl daemon-reload
+            sudo systemctl enable cri-docker.service
+            sudo systemctl enable cri-docker.socket
+            sudo systemctl start cri-docker.service
+            sudo systemctl start cri-docker.socket
+            cd ~
+            rm -rf cri-dockerd
 
-          cd ~
-          rm -rf cri-dockerd
-          rm -rf cri-dockerd*
-          CRICTL_VERSION="v1.29.0"
-          wget https://github.com/kubernetes-sigs/cri-tools/releases/download/${CRICTL_VERSION}/crictl-${CRICTL_VERSION}-linux-amd64.tar.gz
-          sudo tar zxvf crictl-${CRICTL_VERSION}-linux-amd64.tar.gz -C /usr/local/bin
-          rm crictl-${CRICTL_VERSION}-linux-amd64.tar.gz
-          curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-          sudo install minikube-linux-amd64 /usr/local/bin/minikube
-          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-          chmod +x kubectl
-          sudo mv kubectl /usr/local/bin/
-          minikube start --driver=none
-          # 3. Deploy app
-          kubectl apply -f /home/ubuntu/app.yaml
+            # Install crictl
+            CRICTL_VERSION="v1.29.0"
+            wget https://github.com/kubernetes-sigs/cri-tools/releases/download/v${CRICTL_VERSION}/crictl-${CRICTL_VERSION}-linux-amd64.tar.gz
+            sudo tar zxvf crictl-${CRICTL_VERSION}-linux-amd64.tar.gz -C /usr/local/bin
+            rm crictl-${CRICTL_VERSION}-linux-amd64.tar.gz
 
-          # 4. Port forward (detached)
-          nohup kubectl port-forward service/service-web 8080:6000 > forward.log 2>&1 &
-      
+            # Install Minikube
+            curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+            sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+            # Install kubectl
+            curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+            chmod +x kubectl
+            sudo mv kubectl /usr/local/bin/
+
+            # Start Minikube
+            sudo minikube start --driver=none
+
+            # Deploy app
+            export KUBECONFIG=/etc/kubernetes/admin.conf
+            kubectl apply -f /home/ubuntu/app.yaml
+
+            # Port forward (detached)
+            nohup kubectl port-forward service/service-web 8080:6000 > forward.log 2>&1 &
+          EOF
+
