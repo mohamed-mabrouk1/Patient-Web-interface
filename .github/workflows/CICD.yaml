@@ -64,7 +64,11 @@ jobs:
       - name: update and install
         run: |
           sudo apt update -y
-          sudo apt install -y curl wget apt-transport-https conntrack crictl
+          sudo apt install -y curl wget apt-transport-https conntrack 
+          CRICTL_VERSION="v1.29.0"
+          wget https://github.com/kubernetes-sigs/cri-tools/releases/download/${CRICTL_VERSION}/crictl-${CRICTL_VERSION}-linux-amd64.tar.gz
+          sudo tar zxvf crictl-${CRICTL_VERSION}-linux-amd64.tar.gz -C /usr/local/bin
+          rm crictl-${CRICTL_VERSION}-linux-amd64.tar.gz
           curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
           sudo install minikube-linux-amd64 /usr/local/bin/minikube
           curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
