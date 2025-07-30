@@ -109,8 +109,8 @@ jobs:
       - name: deploy
         run: |
           ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@ec2-3-91-134-128.compute-1.amazonaws.com << 'EOF'
-          set -eux
-
+          
+          export PATH=$PATH:/usr/local/bin
           # Apply Kubernetes manifest
           kubectl apply -f /home/ubuntu/app.yaml
 
