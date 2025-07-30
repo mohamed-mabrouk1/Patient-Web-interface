@@ -117,4 +117,4 @@ jobs:
 
           /usr/local/bin/kubectl apply -f /home/ubuntu/app.yaml
           nohup /usr/local/bin/kubectl port-forward service/service-web 8080:6000 > forward.log 2>&1 &
-         EOF
+          EOF
