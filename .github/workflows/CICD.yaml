@@ -109,12 +109,21 @@ jobs:
       - name: deploy
         run: |
           ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@ec2-3-91-134-128.compute-1.amazonaws.com << 'EOF'
-          
-          export PATH=$PATH:/usr/local/bin
-          echo "PATH: \$PATH"
-          which kubectl || echo "kubectl not found"
-          ls -l /usr/local/bin/kubectl || echo "kubectl missing"
+          set -eux
 
-          /usr/local/bin/kubectl apply -f /home/ubuntu/app.yaml
-          nohup /usr/local/bin/kubectl port-forward service/service-web 8080:6000 > forward.log 2>&1 &
+          # 1. Reinstall kubectl
+          curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/kubectl
+
+          # 2. Confirm installation
+          export PATH=$PATH:/usr/local/bin
+          which kubectl
+          kubectl version --client
+
+          # 3. Deploy app
+          kubectl apply -f /home/ubuntu/app.yaml
+
+          # 4. Port forward (detached)
+          nohup kubectl port-forward service/service-web 8080:6000 > forward.log 2>&1 &
           EOF
