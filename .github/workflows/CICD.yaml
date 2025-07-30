@@ -63,7 +63,7 @@ jobs:
           scp -o StrictHostKeyChecking=no -i key.pem k8s/app.yaml ubuntu@ec2-100-26-106-172.compute-1.amazonaws.com:/home/ubuntu/app.yaml
 
           # 2. SSH into EC2 and run full setup + deploy
-          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@ec2-100-26-106-172.compute-1.amazonaws.comm << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@ec2-100-26-106-172.compute-1.amazonaws.com << 'EOF'
             set -eux
 
             # Update and install required packages
