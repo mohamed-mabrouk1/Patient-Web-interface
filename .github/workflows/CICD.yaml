@@ -112,6 +112,7 @@ jobs:
           
           export PATH=$PATH:/usr/local/bin
           # Apply Kubernetes manifest
+          alias kubectl="minikube kubectl --"
           kubectl apply -f /home/ubuntu/app.yaml
 
           # Port-forward in background (optional: detach if needed)
