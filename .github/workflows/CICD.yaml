@@ -122,7 +122,7 @@ jobs:
             # Start Minikube
             sudo minikube start --driver=none
 
-            # Deploy app
+            # Deploy app 
             export KUBECONFIG=/etc/kubernetes/admin.conf
             sudo -E kubectl apply -f /home/ubuntu/app.yaml
 
