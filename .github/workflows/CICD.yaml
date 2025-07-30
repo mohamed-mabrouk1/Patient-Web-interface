@@ -109,5 +109,5 @@ jobs:
       - name: deploy
         run: |
           ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@ec2-3-91-134-128.compute-1.amazonaws.com << 'EOF'
-          sudo kubectl apply -f /home/ubuntu/app.yaml
+          kubectl apply -f /home/ubuntu/app.yaml
           kubectl port-forward service/service-web 8080:6000
