@@ -59,7 +59,7 @@ jobs:
          chmod 600 key.pem    
       - name: Install Minikube on EC2 and Deploy App
         run: |
-          scp -o StrictHostKeyChecking=no -i key.pem k8s/app.yaml ubuntu@ec2-3-91-134-128.compute-1.amazonaws.com:/home/ubuntu/
+          scp -o StrictHostKeyChecking=no -i key.pem k8s/app.yaml ubuntu@ec2-3-91-134-128.compute-1.amazonaws.com:/home/ubuntu/app.yaml
           ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@ec2-3-91-134-128.compute-1.amazonaws.com << 'EOF'
       - name: update and install
         run: |
