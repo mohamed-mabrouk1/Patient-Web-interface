@@ -106,28 +106,9 @@ jobs:
           chmod +x kubectl
           sudo mv kubectl /usr/local/bin/
           minikube start --driver=none
-      - name: deploy
-        run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@ec2-3-91-134-128.compute-1.amazonaws.com << 'EOF'
-          set -eux
-
-          # 1. Reinstall kubectl
-          curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-          chmod +x kubectl
-          sudo mv kubectl /usr/local/bin/kubectl
-
-          # 2. Confirm installation
-          export PATH=$PATH:/usr/local/bin
-          which kubectl
-          kubectl version --client
-          CRICTL_VERSION="v1.29.0"
-          wget https://github.com/kubernetes-sigs/cri-tools/releases/download/v${CRICTL_VERSION}/crictl-${CRICTL_VERSION}-linux-amd64.tar.gz
-          sudo tar zxvf crictl-${CRICTL_VERSION}-linux-amd64.tar.gz -C /usr/local/bin
-          rm crictl-${CRICTL_VERSION}-linux-amd64.tar.gz
-          sudo minikube start --driver=none
           # 3. Deploy app
           kubectl apply -f /home/ubuntu/app.yaml
 
           # 4. Port forward (detached)
           nohup kubectl port-forward service/service-web 8080:6000 > forward.log 2>&1 &
-          EOF
+      
