@@ -111,10 +111,10 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@ec2-3-91-134-128.compute-1.amazonaws.com << 'EOF'
           
           export PATH=$PATH:/usr/local/bin
-          # Apply Kubernetes manifest
-          alias kubectl="minikube kubectl --"
-          kubectl apply -f /home/ubuntu/app.yaml
+          echo "PATH: \$PATH"
+          which kubectl || echo "kubectl not found"
+          ls -l /usr/local/bin/kubectl || echo "kubectl missing"
 
-          # Port-forward in background (optional: detach if needed)
-          nohup kubectl port-forward service/service-web 8080:6000 > portforward.log 2>&1 &
-          EOF
+          /usr/local/bin/kubectl apply -f /home/ubuntu/app.yaml
+          nohup /usr/local/bin/kubectl port-forward service/service-web 8080:6000 > forward.log 2>&1 &
+         EOF
