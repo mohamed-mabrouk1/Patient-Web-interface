@@ -109,5 +109,11 @@ jobs:
       - name: deploy
         run: |
           ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@ec2-3-91-134-128.compute-1.amazonaws.com << 'EOF'
+          set -eux
+
+          # Apply Kubernetes manifest
           kubectl apply -f /home/ubuntu/app.yaml
-          kubectl port-forward service/service-web 8080:6000
+
+          # Port-forward in background (optional: detach if needed)
+          nohup kubectl port-forward service/service-web 8080:6000 > portforward.log 2>&1 &
+          EOF
