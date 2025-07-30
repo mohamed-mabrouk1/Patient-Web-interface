@@ -64,7 +64,12 @@ jobs:
       - name: update and install
         run: |
           sudo apt update -y
-          sudo apt install -y curl wget apt-transport-https conntrack cri-dockerd
+          sudo apt install -y curl wget apt-transport-https conntrack 
+          CRIDOCKERD_VERSION="0.3.1"
+          wget https://github.com/Mirantis/cri-dockerd/releases/download/v${CRIDOCKERD_VERSION}/cri-dockerd_${CRIDOCKERD_VERSION}.amd64.tgz
+          tar -xvf cri-dockerd_${CRIDOCKERD_VERSION}.amd64.tgz
+          sudo mv cri-dockerd/cri-dockerd /usr/bin/
+          rm -rf cri-dockerd*
           CRICTL_VERSION="v1.29.0"
           wget https://github.com/kubernetes-sigs/cri-tools/releases/download/${CRICTL_VERSION}/crictl-${CRICTL_VERSION}-linux-amd64.tar.gz
           sudo tar zxvf crictl-${CRICTL_VERSION}-linux-amd64.tar.gz -C /usr/local/bin
