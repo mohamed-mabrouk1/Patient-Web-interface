@@ -64,7 +64,12 @@ jobs:
       - name: update and install
         run: |
           sudo apt update -y
-          sudo apt install -y curl wget apt-transport-https conntrack 
+          sudo apt install -y curl wget apt-transport-https conntrack
+          CNI_VERSION="v1.3.0"
+          wget https://github.com/containernetworking/plugins/releases/download/${CNI_VERSION}/cni-plugins-linux-amd64-${CNI_VERSION}.tgz
+          sudo mkdir -p /opt/cni/bin
+          sudo tar -C /opt/cni/bin -xzvf cni-plugins-linux-amd64-${CNI_VERSION}.tgz
+          rm cni-plugins-linux-amd64-${CNI_VERSION}.tgz 
           CRIDOCKERD_VERSION="0.3.1"
           wget https://github.com/Mirantis/cri-dockerd/releases/download/v${CRIDOCKERD_VERSION}/cri-dockerd-${CRIDOCKERD_VERSION}.amd64.tgz
 
